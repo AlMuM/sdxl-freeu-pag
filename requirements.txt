@@ -1,0 +1,12 @@
+# torch 请按自己的 CUDA 版本安装（Colab 已自带）
+torch>=2.1
+diffusers>=0.32
+transformers>=4.44
+accelerate>=0.33
+safetensors
+pandas
+numpy
+matplotlib
+scipy>=1.11
+pillow
+pyyaml

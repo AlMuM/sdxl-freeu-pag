@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SDXL 盲评</title>
+<style>
+  :root { --bg:#fafaf8; --fg:#222; --muted:#777; --card:#fff; --line:#ddd; --accent:#2f6fde; --good:#1d8a5b; --bad:#c2410c; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#1b1b1a; --fg:#eee; --muted:#999; --card:#262625; --line:#3a3a38; --accent:#6c9cf0; --good:#4cc18d; --bad:#f08a5d; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.6 -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; }
+  main { max-width:1280px; margin:0 auto; padding:16px; }
+  header { display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; }
+  h1 { font-size:20px; margin:0; font-weight:600; }
+  .muted { color:var(--muted); font-size:13px; }
+  .bar { height:6px; background:var(--line); border-radius:3px; overflow:hidden; margin:12px 0; }
+  .bar > div { height:100%; background:var(--accent); width:0; transition:width .2s; }
+  .caption { font-size:18px; padding:12px 16px; background:var(--card); border:1px solid var(--line); border-radius:10px; margin:8px 0 16px; }
+  .grid { display:grid; grid-template-columns:repeat(var(--n, 3), 1fr); gap:14px; }
+  @media (max-width: 900px) { .grid { grid-template-columns:repeat(2, 1fr); } }
+  @media (max-width: 640px) { .grid { grid-template-columns:1fr; } }
+  .card { background:var(--card); border:2px solid var(--line); border-radius:10px; padding:10px; }
+  .card.best { border-color:var(--good); }
+  .card.worst { border-color:var(--bad); }
+  .card img { display:block; width:100%; max-height:38vh; aspect-ratio:1; object-fit:contain; border-radius:6px; cursor:zoom-in; background:#000; }
+  .slot { font-weight:700; font-size:18px; }
+  .btns { display:flex; gap:8px; margin:8px 0; }
+  button { font:inherit; padding:6px 12px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--fg); cursor:pointer; }
+  button:hover { border-color:var(--accent); }
+  button.on-best { background:var(--good); color:#fff; border-color:var(--good); }
+  button.on-worst { background:var(--bad); color:#fff; border-color:var(--bad); }
+  button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .tags label { display:inline-flex; align-items:center; gap:4px; margin:2px 10px 2px 0; font-size:12px; }
+  .nav { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:16px; }
+  .err { color:var(--bad); font-size:13px; min-height:1.4em; }
+  #login { max-width:420px; margin:80px auto; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:24px; }
+  #login input { font:inherit; width:100%; padding:8px; border-radius:8px; border:1px solid var(--line); background:var(--bg); color:var(--fg); margin:8px 0; }
+  #zoom { position:fixed; inset:0; background:rgba(0,0,0,.85); display:none; align-items:center; justify-content:center; z-index:9; cursor:zoom-out; }
+  #zoom img { max-width:95vw; max-height:95vh; }
+  kbd { border:1px solid var(--line); border-radius:4px; padding:0 4px; font-size:12px; }
+</style>
+</head>
+<body>
+<div id="login">
+  <h1>SDXL 生成质量盲评</h1>
+  <p class="muted">每条文字描述对应 <span id="nImg">几</span> 张图片，由不同方法生成，顺序已随机打乱。请选出<b>最好</b>和<b>最差</b>的一张；如果实在分不出高下，选“都差不多”。也可以给有问题的图片勾选失败类型。</p>
+  <p class="muted">评判标准：整体视觉质量（结构是否合理、细节、真实感）+ 是否符合文字描述。</p>
+  <label>你的名字（用于区分评审，进度自动保存在本浏览器）</label>
+  <input id="rater" placeholder="例如 zhang">
+  <div class="err" id="loginErr"></div>
+  <button class="primary" id="start">开始 / 继续</button>
+</div>
+
+<main id="app" hidden>
+  <header>
+    <h1>第 <span id="idx"></span> / <span id="total"></span> 条</h1>
+    <span class="muted">评审：<b id="who"></b> · 已完成 <span id="doneCount"></span> 条 · 快捷键 <kbd id="kBest">Q W E</kbd> 最好 · <kbd id="kWorst">A S D</kbd> 最差 · <kbd>T</kbd> 差不多 · <kbd>←</kbd><kbd>→</kbd> 翻页</span>
+  </header>
+  <div class="bar"><div id="progress"></div></div>
+  <div class="caption" id="caption"></div>
+  <div class="grid" id="grid"></div>
+  <div class="btns" style="margin-top:12px"><button id="tie">都差不多</button></div>
+  <div class="err" id="err"></div>
+  <div class="nav">
+    <button id="prev">← 上一条</button>
+    <button id="next" class="primary">下一条 →</button>
+    <button id="jump">跳到第一条未完成</button>
+    <span style="flex:1"></span>
+    <button id="export">导出结果 JSON</button>
+  </div>
+</main>
+<div id="zoom"><img alt=""></div>
+
+<script src="manifest.js"></script>
+<script>
+const TAGS = ["物体缺失", "结构/肢体错误", "物体重复", "过饱和/伪影", "与描述不符"];
+const SLOTS = (window.MANIFEST || {}).slots || ["A", "B", "C"];
+const BEST_KEYS = "qwerty", WORST_KEYS = "asdfgh";
+const items = (window.MANIFEST || {}).items || [];
+let rater = "", order = [], pos = 0, answers = {};
+
+function storeKey() { return "sdxl-blind-eval:" + rater; }
+function save() { try { localStorage.setItem(storeKey(), JSON.stringify({ answers, pos })); } catch (e) {} }
+function load() {
+  try { const s = JSON.parse(localStorage.getItem(storeKey()) || "null"); if (s) { answers = s.answers || {}; pos = s.pos || 0; } } catch (e) {}
+}
+// 按评审名字做确定性洗牌：每人看到的题目顺序不同，但刷新后不变
+function seededShuffle(arr, seedStr) {
+  let h = 2166136261;
+  for (const c of seedStr) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); }
+  const rand = () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 1e6) / 1e6; };
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function ans(id) { return answers[id] || (answers[id] = { best: null, worst: null, tie: false, tags: Object.fromEntries(SLOTS.map(s => [s, []])), ms: 0 }); }
+function complete(a) { return a && (a.tie || (a.best && a.worst && a.best !== a.worst)); }
+
+let shownAt = 0;
+function render() {
+  const item = items[order[pos]], a = ans(item.prompt_id);
+  shownAt = performance.now();
+  document.getElementById("idx").textContent = pos + 1;
+  document.getElementById("total").textContent = items.length;
+  const done = items.filter(it => complete(answers[it.prompt_id])).length;
+  document.getElementById("doneCount").textContent = done;
+  document.getElementById("progress").style.width = (100 * done / items.length) + "%";
+  document.getElementById("caption").textContent = item.caption;
+  document.getElementById("tie").className = a.tie ? "primary" : "";
+  document.getElementById("err").textContent = "";
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  for (const s of SLOTS) {
+    const card = document.createElement("div");
+    card.className = "card" + (!a.tie && a.best === s ? " best" : "") + (!a.tie && a.worst === s ? " worst" : "");
+    card.innerHTML = `<div class="slot">${s}</div>
+      <img src="${item.images[s]}" alt="图片 ${s}">
+      <div class="btns">
+        <button data-k="best" class="${!a.tie && a.best === s ? "on-best" : ""}">最好</button>
+        <button data-k="worst" class="${!a.tie && a.worst === s ? "on-worst" : ""}">最差</button>
+      </div>
+      <div class="tags">${TAGS.map(t => `<label><input type="checkbox" value="${t}" ${a.tags[s].includes(t) ? "checked" : ""}>${t}</label>`).join("")}</div>`;
+    card.querySelector("img").onclick = e => { const z = document.getElementById("zoom"); z.querySelector("img").src = e.target.src; z.style.display = "flex"; };
+    card.querySelectorAll("button").forEach(b => b.onclick = () => pick(b.dataset.k, s));
+    card.querySelectorAll("input").forEach(cb => cb.onchange = () => {
+      a.tags[s] = [...card.querySelectorAll("input:checked")].map(x => x.value); save();
+    });
+    grid.appendChild(card);
+  }
+}
+function pick(kind, slot) {
+  const a = ans(items[order[pos]].prompt_id);
+  a.tie = false;
+  a[kind] = slot;
+  const other = kind === "best" ? "worst" : "best";
+  if (a[other] === slot) a[other] = null;
+  save(); render();
+}
+function go(delta, requireDone) {
+  const a = ans(items[order[pos]].prompt_id);
+  if (requireDone && delta > 0 && !complete(a)) {
+    document.getElementById("err").textContent = "请先选出最好和最差的一张（或选“都差不多”）";
+    return;
+  }
+  a.ms += Math.round(performance.now() - shownAt);
+  pos = Math.min(Math.max(pos + delta, 0), items.length - 1);
+  save(); render(); window.scrollTo(0, 0);
+}
+function exportJson() {
+  const out = { rater, exported_at: new Date().toISOString(), n_items: items.length, answers: {} };
+  for (const it of items) if (answers[it.prompt_id]) out.answers[it.prompt_id] = answers[it.prompt_id];
+  const missing = items.length - items.filter(it => complete(answers[it.prompt_id])).length;
+  if (missing && !confirm(`还有 ${missing} 条没完成，仍然导出吗？`)) return;
+  const blob = new Blob([JSON.stringify(out, null, 1)], { type: "application/json" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `results_${rater}.json`;
+  link.click();
+}
+
+document.getElementById("nImg").textContent = SLOTS.length;
+document.getElementById("kBest").textContent = BEST_KEYS.slice(0, SLOTS.length).toUpperCase().split("").join(" ");
+document.getElementById("kWorst").textContent = WORST_KEYS.slice(0, SLOTS.length).toUpperCase().split("").join(" ");
+document.documentElement.style.setProperty("--n", SLOTS.length);
+document.getElementById("start").onclick = () => {
+  const name = document.getElementById("rater").value.trim().replace(/[^\w一-龥-]/g, "");
+  if (!name) { document.getElementById("loginErr").textContent = "请先输入名字"; return; }
+  if (!items.length) { document.getElementById("loginErr").textContent = "没有读到 manifest.js，请确认它和 index.html 在同一文件夹"; return; }
+  rater = name; load();
+  order = seededShuffle(items.map((_, i) => i), rater);
+  document.getElementById("who").textContent = rater;
+  document.getElementById("login").hidden = true;
+  document.getElementById("app").hidden = false;
+  render();
+};
+document.getElementById("rater").addEventListener("input", () => document.getElementById("loginErr").textContent = "");
+document.getElementById("rater").addEventListener("keydown", e => { if (e.key === "Enter") document.getElementById("start").click(); });
+document.getElementById("tie").onclick = () => { const a = ans(items[order[pos]].prompt_id); a.tie = !a.tie; save(); render(); };
+document.getElementById("prev").onclick = () => go(-1, false);
+document.getElementById("next").onclick = () => go(1, true);
+document.getElementById("jump").onclick = () => {
+  const i = order.findIndex(k => !complete(answers[items[k].prompt_id]));
+  pos = i < 0 ? 0 : i; save(); render();
+};
+document.getElementById("export").onclick = exportJson;
+document.getElementById("zoom").onclick = e => e.currentTarget.style.display = "none";
+document.addEventListener("keydown", e => {
+  if (document.getElementById("app").hidden || (e.target.tagName === "INPUT" && e.target.type === "text")) return;
+  const k = e.key.toLowerCase();
+  const bestKeys = Object.fromEntries(SLOTS.map((s, i) => [BEST_KEYS[i], s]));
+  const worstKeys = Object.fromEntries(SLOTS.map((s, i) => [WORST_KEYS[i], s]));
+  if (bestKeys[k]) pick("best", bestKeys[k]);
+  else if (worstKeys[k]) pick("worst", worstKeys[k]);
+  else if (k === "t") document.getElementById("tie").click();
+  else if (e.key === "ArrowRight") go(1, true);
+  else if (e.key === "ArrowLeft") go(-1, false);
+  else if (e.key === "Escape") document.getElementById("zoom").style.display = "none";
+});
+</script>
+</body>
+</html>

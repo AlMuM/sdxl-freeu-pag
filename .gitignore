@@ -1,0 +1,25 @@
+# 生成的图片约 1GB，超出 GitHub 合理大小；需要时在集群或 Colab 上重新生成
+outputs/
+
+# COCO 原始标注（运行 01_sample_prompts.py 时自动下载）
+data/captions_val2017.json
+
+# 盲评打包产物，可由 04 / 04b 脚本重新生成
+blind_eval/
+blind_eval.zip
+online_eval/
+
+
+# 本地 Mac 演示，不属于正式实验
+demo_mac/
+
+# 集群作业日志
+slurm/logs/*
+!slurm/logs/.gitkeep
+
+__pycache__/
+*.pyc
+.DS_Store
+.ipynb_checkpoints/
+online_eval_server/
+eval_server_link.txt

@@ -1,0 +1,355 @@
+<title>SDXL 盲评</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+  /* 布局：顶部进度条 + prompt 卡片 + 一行 N 张图（窄屏折成 2 列 / 1 列）+ 底部操作栏 */
+  :root {
+    --bg: #f6f7f5; --surface: #ffffff; --line: #d9ddd6; --fg: #1d211d; --muted: #646b63;
+    --accent: #2f5fd0; --good: #1b7f52; --bad: #b8461a; --tag-on: #e7ecfa;
+    --font-ui: "IBM Plex Sans", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    --font-data: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #161816; --surface: #212421; --line: #3a3f39; --fg: #e9ece7; --muted: #a2a9a0;
+      --accent: #7ea2f0; --good: #4cc38a; --bad: #f08a5d; --tag-on: #2a3350; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #161816; --surface: #212421; --line: #3a3f39; --fg: #e9ece7; --muted: #a2a9a0;
+    --accent: #7ea2f0; --good: #4cc38a; --bad: #f08a5d; --tag-on: #2a3350; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }  /* 自托管时没有 Artifact 外壳的 reset，必须自己写 */
+  body {
+    background: var(--bg); color: var(--fg); font: 15px/1.55 var(--font-ui);
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 16px;
+  }
+  main { max-width: 1320px; margin: 0 auto; display: grid; gap: 12px; }
+  header { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; justify-content: space-between; }
+  h1 { font-size: 20px; margin: 0; font-weight: 600; text-wrap: balance; }
+  .muted { color: var(--muted); font-size: 13px; }
+  .num { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); }
+  .pill::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+  .pill.ok::before { background: var(--good); }
+  .pill.warn::before { background: var(--bad); }
+  .bar { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+  .bar > div { height: 100%; background: var(--accent); width: 0; transition: width .2s; }
+  .caption { font-size: 18px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+  .grid { display: grid; grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 560px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+  .card { background: var(--surface); border: 2px solid var(--line); border-radius: 10px; padding: 10px; display: grid; gap: 8px; cursor: pointer; }
+  .card.focus { outline: 2px dashed var(--accent); outline-offset: 2px; }
+  .card.best { border-color: var(--good); }
+  .card.worst { border-color: var(--bad); }
+  .card img { display: block; width: 100%; max-width: 100%; aspect-ratio: 1; object-fit: contain; border-radius: 6px; background: #000; cursor: zoom-in; }
+  .slot { font-weight: 700; font-size: 17px; display: flex; justify-content: space-between; align-items: center; }
+  .row { display: flex; flex-wrap: wrap; gap: 6px; }
+  button { font: inherit; font-size: 14px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button.on-best { background: var(--good); color: #fff; border-color: var(--good); }
+  button.on-worst { background: var(--bad); color: #fff; border-color: var(--bad); }
+  button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .tag { font-size: 12.5px; padding: 4px 9px; border-radius: 999px; }
+  .tag.on { background: var(--tag-on); border-color: var(--accent); color: var(--fg); font-weight: 600; }
+  .tag kbd { font-size: 11px; margin-right: 3px; }
+  .nav { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .spacer { flex: 1; }
+  .err { color: var(--bad); font-size: 13px; min-height: 1.3em; }
+  .panel { max-width: 520px; margin: 48px auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 24px; display: grid; gap: 12px; }
+  .panel input { font: inherit; width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
+  .panel ul { margin: 0; padding-left: 20px; }
+  #zoom { position: fixed; inset: 0; background: rgba(0,0,0,.86); display: flex; align-items: center; justify-content: center; z-index: 9; cursor: zoom-out; padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); }
+  #zoom img { max-width: 95vw; max-height: 92vh; }
+  kbd { font-family: var(--font-data); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; font-size: 12px; }
+  @media (prefers-reduced-motion: reduce) { .bar > div { transition: none; } }
+</style>
+
+<section class="panel" id="login">
+  <h1>SDXL 生成质量盲评</h1>
+  <p class="muted" style="margin:0">每条文字描述配 <span id="nImg" class="num">4</span> 张图，由不同方法生成，顺序已随机打乱。请选出<b>最好</b>和<b>最差</b>的一张；实在分不出高下时选“都差不多”。</p>
+  <ul class="muted">
+    <li>评判标准：结构是否合理、细节与真实感，以及是否符合文字描述。</li>
+    <li>点一张图选中它，再按 <kbd>1</kbd>–<kbd>5</kbd> 给它打失败类型标签。</li>
+    <li>每一步都会自动保存，可以随时关掉页面，下次输入同一个名字继续。</li>
+  </ul>
+  <label for="rater">你的名字（只用来区分评审）</label>
+  <input id="rater" placeholder="例如 zhang" autocomplete="off">
+  <div class="err" id="loginErr"></div>
+  <div class="row"><button class="primary" id="start">开始 / 继续</button><span class="pill" id="saveMode">正在连接保存服务…</span></div>
+</section>
+
+<main id="app" hidden>
+  <header>
+    <h1>第 <span id="idx" class="num"></span> / <span id="total" class="num"></span> 条</h1>
+    <div class="row" style="align-items:center">
+      <span class="muted">评审 <b id="who"></b> · 已完成 <span id="doneCount" class="num"></span> 条</span>
+      <span class="pill" id="saveState">已保存</span>
+    </div>
+  </header>
+  <div class="bar"><div id="progress"></div></div>
+  <div class="caption" id="caption"></div>
+  <div class="grid" id="grid"></div>
+  <div class="err" id="err"></div>
+  <div class="nav">
+    <button id="tie">都差不多 <kbd>T</kbd></button>
+    <button id="prev">← 上一条</button>
+    <button id="next" class="primary">下一条 →</button>
+    <button id="jump">跳到第一条未完成</button>
+    <span class="spacer"></span>
+    <button id="export">导出 JSON（备用）</button>
+  </div>
+  <p class="muted" id="keys" style="margin:0"></p>
+</main>
+<div id="zoom" hidden><img alt="放大的图片"></div>
+
+<script>
+/*__MANIFEST__*/
+const TAGS = ["物体缺失", "结构/肢体错误", "物体重复", "过饱和/伪影", "与描述不符"];
+const SLOTS = (window.MANIFEST || {}).slots || ["A", "B", "C", "D"];
+const ITEMS = (window.MANIFEST || {}).items || [];
+const BEST_KEYS = "qwerty", WORST_KEYS = "asdfgh";
+let rater = "", order = [], pos = 0, answers = {}, focusSlot = null, shownAt = 0;
+let db = null, uid = null;
+// 远端存储：claude.ai 数据库（发布为 Artifact 时）或自托管服务器（window.EVAL_SERVER 为 true 时）
+let remote = null;
+const dbRemote = {
+  load: async () => {
+    const snap = await db.doc("ratings/" + uid).collection("answers").limit(1000).get();
+    return Object.fromEntries(snap.docs.map(d => [d.id, d.data()]));
+  },
+  save: (pid, a) => db.doc("ratings/" + uid).collection("answers").doc(pid).set({ prompt_id: pid, ...a }),
+  profile: info => db.doc("ratings/" + uid).set(info),
+};
+const serverRemote = {
+  load: async () => {
+    const r = await fetch("api/answers?rater=" + encodeURIComponent(rater), { cache: "no-store" });
+    if (!r.ok) throw { code: "http_" + r.status };
+    return r.json();
+  },
+  save: async (pid, a) => {
+    const r = await fetch("api/answer", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ rater, prompt_id: pid, answer: a }) });
+    if (!r.ok) throw { code: r.status >= 500 ? "unavailable" : "http_" + r.status };
+  },
+  profile: null,
+};
+const $ = id => document.getElementById(id);
+
+// ---------- 保存：本地一份 + 在线数据库一份 ----------
+const localKey = () => "sdxl-online-eval:" + rater;
+function saveLocal() { try { localStorage.setItem(localKey(), JSON.stringify({ answers, pos })); } catch (e) {} }
+function loadLocal() {
+  try { const s = JSON.parse(localStorage.getItem(localKey()) || "null"); if (s) { answers = s.answers || {}; pos = s.pos || 0; } } catch (e) {}
+}
+const timers = {}, writing = {};
+let pendingCount = 0, failed = false;
+function setSaveState() {
+  const el = $("saveState");
+  if (!remote) { el.className = "pill warn"; el.textContent = "只存在本浏览器，评完请导出 JSON"; return; }
+  if (failed) { el.className = "pill warn"; el.textContent = "在线保存失败，已存在本浏览器"; return; }
+  el.className = pendingCount ? "pill" : "pill ok";
+  el.textContent = pendingCount ? "保存中…" : "已在线保存";
+}
+function queueRemote(pid) {
+  answers[pid].updatedAt = Date.now();
+  saveLocal();
+  if (!remote) return setSaveState();
+  if (!timers[pid]) pendingCount++;
+  clearTimeout(timers[pid]);
+  timers[pid] = setTimeout(() => writeRemote(pid), 500);
+  setSaveState();
+}
+async function writeRemote(pid) {
+  if (writing[pid]) { timers[pid] = setTimeout(() => writeRemote(pid), 300); return; }
+  writing[pid] = true;
+  const a = answers[pid];
+  try {
+    await remote.save(pid, { best: a.best, worst: a.worst, tie: !!a.tie, tags: a.tags, ms: a.ms || 0, updatedAt: Date.now() });
+    failed = false;
+  } catch (e) {
+    if (e && e.code === "unavailable") { writing[pid] = false; timers[pid] = setTimeout(() => writeRemote(pid), 800 + Math.random() * 800); return; }
+    failed = true;
+  }
+  writing[pid] = false; delete timers[pid]; pendingCount = Math.max(0, pendingCount - 1);
+  setSaveState();
+}
+let profileTimer = null;
+function saveProfile() {
+  if (!remote || !remote.profile) return;
+  clearTimeout(profileTimer);
+  profileTimer = setTimeout(() => {
+    remote.profile({ rater, done: doneCount(), total: ITEMS.length, updatedAt: Date.now() }).catch(() => {});
+  }, 800);
+}
+
+// ---------- 评分逻辑 ----------
+function seededShuffle(arr, seedStr) {
+  let h = 2166136261;
+  for (const c of seedStr) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); }
+  const rand = () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 1e6) / 1e6; };
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function ans(id) {
+  const a = answers[id];
+  if (a) {  // 服务器存的答案可能缺少某张图的 tags
+    a.tags = a.tags || {};
+    for (const s of SLOTS) a.tags[s] = a.tags[s] || [];
+    return a;
+  }
+  return (answers[id] = { best: null, worst: null, tie: false, tags: Object.fromEntries(SLOTS.map(s => [s, []])), ms: 0 });
+}
+const complete = a => a && (a.tie || (a.best && a.worst && a.best !== a.worst));
+const doneCount = () => ITEMS.filter(it => complete(answers[it.prompt_id])).length;
+const current = () => ITEMS[order[pos]];
+
+function render() {
+  const item = current(), a = ans(item.prompt_id);
+  shownAt = performance.now();
+  $("idx").textContent = pos + 1;
+  $("total").textContent = ITEMS.length;
+  const done = doneCount();
+  $("doneCount").textContent = done;
+  $("progress").style.width = (100 * done / ITEMS.length) + "%";
+  $("caption").textContent = item.caption;
+  $("tie").className = a.tie ? "primary" : "";
+  $("err").textContent = "";
+  const grid = $("grid");
+  grid.replaceChildren();
+  for (const s of SLOTS) {
+    const card = document.createElement("div");
+    card.className = "card" + (!a.tie && a.best === s ? " best" : "") + (!a.tie && a.worst === s ? " worst" : "") + (focusSlot === s ? " focus" : "");
+    const head = document.createElement("div"); head.className = "slot";
+    head.innerHTML = `<span>${s}</span><span class="muted">${focusSlot === s ? "1–5 打标签" : ""}</span>`;
+    const img = document.createElement("img"); img.src = item.images[s]; img.alt = "图片 " + s;
+    img.onclick = e => { e.stopPropagation(); const z = $("zoom"); z.querySelector("img").src = img.src; z.hidden = false; };
+    const pickRow = document.createElement("div"); pickRow.className = "row";
+    for (const [kind, label] of [["best", "最好"], ["worst", "最差"]]) {
+      const b = document.createElement("button");
+      b.textContent = label;
+      if (!a.tie && a[kind] === s) b.className = kind === "best" ? "on-best" : "on-worst";
+      b.onclick = e => { e.stopPropagation(); pick(kind, s); };
+      pickRow.appendChild(b);
+    }
+    const tagRow = document.createElement("div"); tagRow.className = "row";
+    TAGS.forEach((t, i) => {
+      const b = document.createElement("button");
+      b.className = "tag" + (a.tags[s].includes(t) ? " on" : "");
+      b.setAttribute("aria-pressed", a.tags[s].includes(t));
+      b.innerHTML = `<kbd>${i + 1}</kbd>`; b.append(t);
+      b.onclick = e => { e.stopPropagation(); focusSlot = s; toggleTag(s, t); };
+      tagRow.appendChild(b);
+    });
+    card.onclick = () => { focusSlot = s; render(); };
+    card.append(head, img, pickRow, tagRow);
+    grid.appendChild(card);
+  }
+}
+function pick(kind, slot) {
+  const pid = current().prompt_id, a = ans(pid);
+  a.tie = false; a[kind] = slot;
+  const other = kind === "best" ? "worst" : "best";
+  if (a[other] === slot) a[other] = null;
+  if (kind === "worst") focusSlot = slot;  // 最差的图最常需要打失败标签
+  queueRemote(pid); saveProfile(); render();
+}
+function toggleTag(slot, tag) {
+  const pid = current().prompt_id, a = ans(pid), list = a.tags[slot];
+  a.tags[slot] = list.includes(tag) ? list.filter(x => x !== tag) : list.concat(tag);
+  queueRemote(pid); render();
+}
+function go(delta, requireDone) {
+  const pid = current().prompt_id, a = ans(pid);
+  if (requireDone && delta > 0 && !complete(a)) { $("err").textContent = "请先选出最好和最差的一张（或选“都差不多”）"; return; }
+  a.ms += Math.round(performance.now() - shownAt);
+  if (complete(a)) queueRemote(pid);
+  pos = Math.min(Math.max(pos + delta, 0), ITEMS.length - 1);
+  focusSlot = null; saveLocal(); render(); window.scrollTo(0, 0);
+}
+function exportJson() {
+  const out = { rater, exported_at: new Date().toISOString(), n_items: ITEMS.length, answers: {} };
+  for (const it of ITEMS) if (answers[it.prompt_id]) out.answers[it.prompt_id] = answers[it.prompt_id];
+  const text = JSON.stringify(out, null, 1);
+  (async () => {
+    const dl = await window.claude?.use?.("downloads");
+    if (dl) { try { await dl.save({ filename: `results_${rater}.json`, data: text }); return; } catch (e) {} }
+    try { await navigator.clipboard.writeText(text); $("err").textContent = "已复制到剪贴板，粘贴保存为 results_" + rater + ".json"; }
+    catch (e) { $("err").textContent = "导出不可用：评分已在线保存，无需导出"; }
+  })();
+}
+
+// ---------- 启动 ----------
+async function connect() {
+  if (window.EVAL_SERVER) {
+    try { const r = await fetch("api/ping", { cache: "no-store" }); if (r.ok) remote = serverRemote; } catch (e) {}
+  } else {
+    try {
+      db = await window.claude?.use?.("db") || null;
+      const user = await window.claude?.use?.("user");
+      uid = user ? await user.id() : null;
+    } catch (e) { db = null; uid = null; }
+    if (db && uid) remote = dbRemote;
+  }
+  const el = $("saveMode");
+  if (remote) { el.className = "pill ok"; el.textContent = "评分会自动在线保存"; }
+  else { el.className = "pill warn"; el.textContent = "无法在线保存，评分只存在本浏览器"; }
+  if (db && uid && !$("rater").value) {
+    try { const p = await db.doc("ratings/" + uid).get(); if (p.exists && p.data().rater) $("rater").value = p.data().rater; } catch (e) {}
+  }
+}
+const ready = connect();
+
+async function start() {
+  const name = $("rater").value.trim().replace(/[^\w\u4e00-\u9fa5-]/g, "");
+  if (!name) { $("loginErr").textContent = "请先输入名字"; return; }
+  if (!ITEMS.length) { $("loginErr").textContent = "页面没有读到评审数据，请联系发起人"; return; }
+  rater = name; $("start").disabled = true;
+  await ready;
+  loadLocal();
+  if (remote) {
+    try {
+      const saved = await remote.load();
+      for (const [pid, r] of Object.entries(saved)) {
+        const local = answers[pid];
+        if (!local || (r.updatedAt || 0) >= (local.updatedAt || 0)) answers[pid] = { best: r.best, worst: r.worst, tie: !!r.tie, tags: r.tags, ms: r.ms || 0, updatedAt: r.updatedAt };
+      }
+    } catch (e) { failed = true; }
+    saveProfile();
+  }
+  order = seededShuffle(ITEMS.map((_, i) => i), rater);
+  document.documentElement.style.setProperty("--n", SLOTS.length);
+  $("keys").innerHTML = `快捷键：<kbd>${BEST_KEYS.slice(0, SLOTS.length).toUpperCase().split("").join(" ")}</kbd> 选最好 · <kbd>${WORST_KEYS.slice(0, SLOTS.length).toUpperCase().split("").join(" ")}</kbd> 选最差 · <kbd>T</kbd> 都差不多 · 先点一张图再按 <kbd>1</kbd>–<kbd>5</kbd> 打标签 · <kbd>←</kbd> <kbd>→</kbd> 翻页`;
+  $("who").textContent = rater;
+  $("login").hidden = true; $("app").hidden = false;
+  setSaveState(); render();
+}
+
+$("nImg").textContent = SLOTS.length;
+$("start").onclick = start;
+$("rater").addEventListener("input", () => $("loginErr").textContent = "");
+$("rater").addEventListener("keydown", e => { if (e.key === "Enter") start(); });
+$("tie").onclick = () => { const pid = current().prompt_id, a = ans(pid); a.tie = !a.tie; queueRemote(pid); saveProfile(); render(); };
+$("prev").onclick = () => go(-1, false);
+$("next").onclick = () => go(1, true);
+$("jump").onclick = () => { const i = order.findIndex(k => !complete(answers[ITEMS[k].prompt_id])); pos = i < 0 ? 0 : i; focusSlot = null; render(); };
+$("export").onclick = exportJson;
+$("zoom").onclick = () => { $("zoom").hidden = true; };
+document.addEventListener("keydown", e => {
+  if ($("app").hidden || e.target.tagName === "INPUT" || e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key.toLowerCase();
+  const bi = BEST_KEYS.indexOf(k), wi = WORST_KEYS.indexOf(k);
+  if (bi >= 0 && bi < SLOTS.length) pick("best", SLOTS[bi]);
+  else if (wi >= 0 && wi < SLOTS.length) pick("worst", SLOTS[wi]);
+  else if (/^[1-5]$/.test(k)) { if (focusSlot) toggleTag(focusSlot, TAGS[Number(k) - 1]); else $("err").textContent = "先点一张图，再按数字键打标签"; }
+  else if (k === "t") $("tie").click();
+  else if (e.key === "ArrowRight") go(1, true);
+  else if (e.key === "ArrowLeft") go(-1, false);
+  else if (e.key === "Escape") $("zoom").hidden = true;
+});
+</script>

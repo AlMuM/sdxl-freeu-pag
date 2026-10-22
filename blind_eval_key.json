@@ -1,0 +1,362 @@
+{
+ "p082": {
+  "A": "baseline",
+  "B": "pag",
+  "C": "freeu",
+  "D": "freeu_pag"
+ },
+ "p038": {
+  "A": "baseline",
+  "B": "pag",
+  "C": "freeu",
+  "D": "freeu_pag"
+ },
+ "p101": {
+  "A": "freeu_pag",
+  "B": "pag",
+  "C": "baseline",
+  "D": "freeu"
+ },
+ "p012": {
+  "A": "freeu_pag",
+  "B": "freeu",
+  "C": "pag",
+  "D": "baseline"
+ },
+ "p018": {
+  "A": "baseline",
+  "B": "pag",
+  "C": "freeu",
+  "D": "freeu_pag"
+ },
+ "p137": {
+  "A": "freeu",
+  "B": "baseline",
+  "C": "freeu_pag",
+  "D": "pag"
+ },
+ "p024": {
+  "A": "freeu_pag",
+  "B": "freeu",
+  "C": "pag",
+  "D": "baseline"
+ },
+ "p093": {
+  "A": "pag",
+  "B": "baseline",
+  "C": "freeu_pag",
+  "D": "freeu"
+ },
+ "p014": {
+  "A": "pag",
+  "B": "baseline",
+  "C": "freeu",
+  "D": "freeu_pag"
+ },
+ "p129": {
+  "A": "freeu_pag",
+  "B": "freeu",
+  "C": "pag",
+  "D": "baseline"
+ },
+ "p054": {
+  "A": "baseline",
+  "B": "freeu",
+  "C": "freeu_pag",
+  "D": "pag"
+ },
+ "p009": {
+  "A": "baseline",
+  "B": "freeu",
+  "C": "pag",
+  "D": "freeu_pag"
+ },
+ "p022": {
+  "A": "pag",
+  "B": "freeu",
+  "C": "freeu_pag",
+  "D": "baseline"
+ },
+ "p111": {
+  "A": "freeu",
+  "B": "baseline",
+  "C": "pag",
+  "D": "freeu_pag"
+ },
+ "p107": {
+  "A": "freeu_pag",
+  "B": "freeu",
+  "C": "pag",
+  "D": "baseline"
+ },
+ "p017": {
+  "A": "baseline",
+  "B": "pag",
+  "C": "freeu",
+  "D": "freeu_pag"
+ },
+ "p061": {
+  "A": "freeu_pag",
+  "B": "freeu",
+  "C": "baseline",
+  "D": "pag"
+ },
+ "p023": {
+  "A": "freeu",
+  "B": "freeu_pag",
+  "C": "baseline",
+  "D": "pag"
+ },
+ "p108": {
+  "A": "freeu",
+  "B": "pag",
+  "C": "baseline",
+  "D": "freeu_pag"
+ },
+ "p015": {
+  "A": "freeu",
+  "B": "freeu_pag",
+  "C": "baseline",
+  "D": "pag"
+ },
+ "p031": {
+  "A": "baseline",
+  "B": "pag",
+  "C": "freeu",
+  "D": "freeu_pag"
+ },
+ "p057": {
+  "A": "pag",
+  "B": "freeu",
+  "C": "freeu_pag",
+  "D": "baseline"
+ },
+ "p130": {
+  "A": "baseline",
+  "B": "freeu",
+  "C": "pag",
+  "D": "freeu_pag"
+ },
+ "p073": {
+  "A": "baseline",
+  "B": "pag",
+  "C": "freeu_pag",
+  "D": "freeu"
+ },
+ "p074": {
+  "A": "baseline",
+  "B": "pag",
+  "C": "freeu",
+  "D": "freeu_pag"
+ },
+ "p050": {
+  "A": "freeu_pag",
+  "B": "pag",
+  "C": "baseline",
+  "D": "freeu"
+ },
+ "p006": {
+  "A": "freeu_pag",
+  "B": "pag",
+  "C": "baseline",
+  "D": "freeu"
+ },
+ "p028": {
+  "A": "pag",
+  "B": "freeu_pag",
+  "C": "baseline",
+  "D": "freeu"
+ },
+ "p005": {
+  "A": "baseline",
+  "B": "pag",
+  "C": "freeu_pag",
+  "D": "freeu"
+ },
+ "p071": {
+  "A": "pag",
+  "B": "freeu",
+  "C": "freeu_pag",
+  "D": "baseline"
+ },
+ "p109": {
+  "A": "baseline",
+  "B": "freeu",
+  "C": "freeu_pag",
+  "D": "pag"
+ },
+ "p134": {
+  "A": "freeu_pag",
+  "B": "baseline",
+  "C": "pag",
+  "D": "freeu"
+ },
+ "p037": {
+  "A": "baseline",
+  "B": "freeu",
+  "C": "pag",
+  "D": "freeu_pag"
+ },
+ "p053": {
+  "A": "baseline",
+  "B": "pag",
+  "C": "freeu",
+  "D": "freeu_pag"
+ },
+ "p145": {
+  "A": "freeu_pag",
+  "B": "pag",
+  "C": "freeu",
+  "D": "baseline"
+ },
+ "p069": {
+  "A": "freeu",
+  "B": "pag",
+  "C": "freeu_pag",
+  "D": "baseline"
+ },
+ "p127": {
+  "A": "pag",
+  "B": "baseline",
+  "C": "freeu_pag",
+  "D": "freeu"
+ },
+ "p126": {
+  "A": "pag",
+  "B": "freeu_pag",
+  "C": "freeu",
+  "D": "baseline"
+ },
+ "p039": {
+  "A": "freeu",
+  "B": "pag",
+  "C": "freeu_pag",
+  "D": "baseline"
+ },
+ "p120": {
+  "A": "pag",
+  "B": "freeu_pag",
+  "C": "freeu",
+  "D": "baseline"
+ },
+ "p104": {
+  "A": "pag",
+  "B": "freeu",
+  "C": "freeu_pag",
+  "D": "baseline"
+ },
+ "p087": {
+  "A": "baseline",
+  "B": "freeu_pag",
+  "C": "pag",
+  "D": "freeu"
+ },
+ "p132": {
+  "A": "baseline",
+  "B": "freeu",
+  "C": "freeu_pag",
+  "D": "pag"
+ },
+ "p013": {
+  "A": "freeu",
+  "B": "pag",
+  "C": "baseline",
+  "D": "freeu_pag"
+ },
+ "p125": {
+  "A": "baseline",
+  "B": "pag",
+  "C": "freeu",
+  "D": "freeu_pag"
+ },
+ "p112": {
+  "A": "pag",
+  "B": "baseline",
+  "C": "freeu",
+  "D": "freeu_pag"
+ },
+ "p081": {
+  "A": "pag",
+  "B": "freeu_pag",
+  "C": "baseline",
+  "D": "freeu"
+ },
+ "p143": {
+  "A": "freeu_pag",
+  "B": "baseline",
+  "C": "freeu",
+  "D": "pag"
+ },
+ "p047": {
+  "A": "pag",
+  "B": "freeu",
+  "C": "freeu_pag",
+  "D": "baseline"
+ },
+ "p146": {
+  "A": "freeu_pag",
+  "B": "baseline",
+  "C": "pag",
+  "D": "freeu"
+ },
+ "p070": {
+  "A": "freeu",
+  "B": "baseline",
+  "C": "freeu_pag",
+  "D": "pag"
+ },
+ "p091": {
+  "A": "baseline",
+  "B": "freeu",
+  "C": "freeu_pag",
+  "D": "pag"
+ },
+ "p008": {
+  "A": "pag",
+  "B": "baseline",
+  "C": "freeu_pag",
+  "D": "freeu"
+ },
+ "p072": {
+  "A": "freeu",
+  "B": "baseline",
+  "C": "freeu_pag",
+  "D": "pag"
+ },
+ "p007": {
+  "A": "pag",
+  "B": "freeu_pag",
+  "C": "baseline",
+  "D": "freeu"
+ },
+ "p079": {
+  "A": "pag",
+  "B": "freeu_pag",
+  "C": "baseline",
+  "D": "freeu"
+ },
+ "p026": {
+  "A": "freeu",
+  "B": "baseline",
+  "C": "freeu_pag",
+  "D": "pag"
+ },
+ "p063": {
+  "A": "freeu_pag",
+  "B": "pag",
+  "C": "freeu",
+  "D": "baseline"
+ },
+ "p131": {
+  "A": "freeu_pag",
+  "B": "freeu",
+  "C": "baseline",
+  "D": "pag"
+ },
+ "p068": {
+  "A": "baseline",
+  "B": "freeu",
+  "C": "pag",
+  "D": "freeu_pag"
+ }
+}

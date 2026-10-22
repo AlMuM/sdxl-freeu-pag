@@ -1,0 +1,151 @@
+prompt_id,image_id,category,caption,seed,in_subset
+p000,521231,animal,A polar bear standing by rocks in a grassy habitat.,729286588,1
+p001,724,outdoor,An upside down stop sign by the road.,678741550,1
+p002,356261,animal,A brown horse standing on top of a lush green hillside.,1591109152,1
+p003,92416,person,A man holding a bottle of something to drink.,533221309,1
+p004,179392,animal,Cat staring into the camera in the day time.,1645059823,1
+p005,10995,indoor,The neatly made bed is beside an open window.,54061823,1
+p006,74733,multi_object,A wooden table holding multiple beers and a plate of food with pizza on it.,511179764,1
+p007,513580,multi_object,A person on a motor bike and small red airplane.,147103103,1
+p008,22969,animal,"Pair of giraffes exploring a large, airy zoo enclosure.",1210222130,1
+p009,22479,person,The skateboarder wears headphones while jumping to grab his board.,1459774181,1
+p010,437110,outdoor,A large building with a tower that has a clock.,1797586880,1
+p011,184324,outdoor,A picture of a city intersection with period buildings and store fronts.,2107072663,1
+p012,165257,indoor,a clean kitchen counter with a clean sink.,517532145,1
+p013,306136,multi_object,A bus parked outside and below an illuminated Apple sign.,884890745,1
+p014,97230,animal,Two elephants are facing each other on the side of a dirt road.,1987354027,1
+p015,80057,animal,A teddy bear is sitting near to a toy with pegs.,2084576723,1
+p016,265816,animal,A horse is standing with a black carriage.,760516020,1
+p017,158744,person,a man is holding some stuff standing by the curb.,484523151,1
+p018,475779,animal,An adorable elephant walking through a grass covered forest.,32097932,1
+p019,488166,person,The man stands on fence railing beside a table with food on it.,1355153347,1
+p020,87742,multi_object,A glass vase full of feathers on a table in front of a window.,1004352895,1
+p021,67315,person,A close-up picture of a man wearing a tie.,1978247332,1
+p022,288430,person,A man plays with his family on the beach.,139332869,1
+p023,445365,animal,"Two giraffes, one looking toward the camera, stand on some grass.",1346782895,1
+p024,196843,outdoor,A school bus covered in art and a sign.,789921470,1
+p025,210502,outdoor,A train on the tracks has a black and white striped door.,2105652969,1
+p026,569917,indoor,a a small bathroom with pink tile and trim.,702558764,1
+p027,566042,animal,A small pack of giraffes are looking in to the distance.,1843398662,1
+p028,116439,person,a lady wearing a straw hat in a boat with oars.,1394141401,1
+p029,365766,indoor,"An unadorned kitchen with oven, sink, cabinets, microwave, wood floor, and a window.",1664174634,1
+p030,28993,outdoor,Three fire hydrants in front of a huge building.,802885918,1
+p031,237984,multi_object,A green chair is sitting behind a green bench.,933926150,1
+p032,497599,multi_object,a man standing by a table looking at a laptop.,1143937446,1
+p033,295809,outdoor,A freshly paved road with a bicycle lane marker on the pavement.,32938791,1
+p034,508917,outdoor,a train sitting on the tracks at a station.,1007389172,1
+p035,371699,animal,A classroom has letters on the wall and a dog on the floor.,1791721408,0
+p036,387383,multi_object,"An orange and white cat, a grey cat and a black cat on a bed with a blue and green cover.",588830638,1
+p037,556193,person,One guy is showing another guy the intricacies of the Wii.,1421876985,1
+p038,397639,animal,Pair of sheep standing on open grassy field on clear day.,1333935938,0
+p039,547519,animal,A bear is running around in a dirt field.,307320601,0
+p040,213816,outdoor,A passenger train's door is open at the station platform.,823988670,1
+p041,338625,outdoor,A double city bus is pulled up to a bus stop.,789886836,1
+p042,263644,indoor,"A Victorian style bed, and vanity in a room.",1076099052,1
+p043,144984,person,A boy wearing an orange t-shirt playing a video game while sitting on a couch.,54060661,1
+p044,229753,animal,a close up of two giraffes near one another.,1312910659,0
+p045,195842,person,A woman in a messy living room playing the Wii.,1738792265,1
+p046,563470,person,A woman resting her head on top of a baseball bat.,418898770,0
+p047,488736,outdoor,Large four sided clock hangs on the corner of the building.,1132851274,0
+p048,352491,outdoor,A passenger train on the outer track at a railway station.,594571987,0
+p049,532575,multi_object,A large brown and black dog laying on the back of a boat.,531714962,1
+p050,492878,indoor,A sink with toiletry items setting on the edge.,81662016,1
+p051,210708,animal,An elephant and a baby elephant are bathing in a river.,297490494,0
+p052,2157,multi_object,A table topped with a cake covered in berries next to a plate of sandwiches.,1525376070,1
+p053,138492,multi_object,A dog catching a purple Frisbee in it's mouth on a green grass covered field.,665586463,1
+p054,554838,indoor,Several breakfast foods are on top of a refrigerator.,2091822982,1
+p055,245915,animal,Elephants line up in a river to take a drink.,581189115,0
+p056,155154,indoor,"Some sort of bathroom facility, possibly in an airplane.",1738002124,1
+p057,39477,multi_object,"A small room with a futon couch, a sewing machine on a table, and a flatscreen TV.",247573080,0
+p058,197658,outdoor,Cather preparing to catch ball in an empty field.,686892752,0
+p059,380913,person,A group of people using their telephones on a subway car.,1590811059,0
+p060,330554,indoor,Blender on a messy counter in a kitchen filled with food.,1613858888,1
+p061,363188,outdoor,A zombie apocalypse is happening on the street.,1899410888,0
+p062,192191,indoor,white stove top oven with a pizza cooking inside of it.,2125515448,1
+p063,475223,animal,a large bird catching a gray from in shallow water near grass.,657309184,0
+p064,572517,multi_object,a polar bear following a big winged bird.,32940246,0
+p065,133819,outdoor,A blue bus makes its way down a narrow city street.,1697902275,0
+p066,462614,indoor,A template example of a bathroom is shown in bright colors.,1706891228,0
+p067,222458,person,A woman in a coat walks along a snow covered sidewalk.,2124200135,0
+p068,233033,multi_object,A patio with a table and blue and white umbrella.,93322465,0
+p069,195045,outdoor,A park filled with green grass and a tall leaf filled tree.,688542498,0
+p070,174231,multi_object,A cat lies on a laptop between the keyboard and the cover.,1025749183,0
+p071,277584,animal,A cat as sitting outside while looking through a window.,563197412,0
+p072,73946,person,Two men fake biting a surfboard for a picture.,403977389,0
+p073,461275,outdoor,A white street sign in front of a green large tree.,1687622368,0
+p074,32038,multi_object,A close-up of a cheese pizza on a wooden table.,1660386732,0
+p075,89271,multi_object,A cat peeks over a chair while wearing a hat.,2028321776,0
+p076,427649,outdoor,A boat on a still lake in front of a mountain.,912097061,0
+p077,516804,outdoor,A sign is posted that says this bus stop is closed.,1207275503,0
+p078,338986,outdoor,a blue and yellow train a building and some cars.,1102314047,0
+p079,56127,indoor,a long brown and white room with a kitchen.,200028336,0
+p080,34760,indoor,"A bathroom with a shower, toilet, and sink.",943109630,0
+p081,509656,animal,A zebra in the shade on a sunny day.,997777583,0
+p082,231831,multi_object,A black and white cat sitting on top of a chair.,1492924316,0
+p083,151516,animal,A bird swooping down to the water to catch food.,379933965,0
+p084,500464,indoor,"A sink, mirror and toiletries in a bathroom.",899268113,0
+p085,268375,animal,A baby elephant stands near to four larger adult elephants.,527005445,0
+p086,169076,multi_object,A black dog laying down not watching the TV that is turned on.,1479326688,0
+p087,459153,multi_object,a person operating a laptop on a bench.,1134564753,0
+p088,298251,animal,Panoramic image of zebras grazing and lying in a field.,264290408,0
+p089,530162,person,A man holding an umbrella for other people.,1292389505,0
+p090,566758,outdoor,A school bus is parked on the side of the street.,1184988138,0
+p091,293625,person,Young women holding remote game controls while playing.,1066971815,0
+p092,391722,person,A man serving another man a cake with candles on it.,1138147321,0
+p093,407960,animal,A cat looks up at the stove and is reflected in the oven's glass.,1647122354,0
+p094,562818,person,A group of people riding down a snow covered slope.,1755779220,0
+p095,283717,indoor,A kitchen counter with a microwave and a toaster oven on a shelf.,2139290743,0
+p096,548506,indoor,A close up shot of some apples pears and bananas on a table.,837723425,0
+p097,137727,multi_object,a cargo truck is loading a train with luggage.,430773446,0
+p098,211120,animal,Several teddy bears appear to have a picnic on the grass.,1536532177,0
+p099,311081,indoor,A small bathroom with the shower curtains open.,177377139,0
+p100,263966,animal,A horse standing near a wood fence being looked at through a camera lens.,116194202,0
+p101,172083,indoor,Fancy designed sink in a bathroom with stained glass window pattern.,408848233,0
+p102,343706,person,"It is winter, and this young woman wearing her cold weaterh coat also has her Smartphone in a handknitted sleeve.",744434840,0
+p103,122672,person,A guy on a surf board in the water.,1514520257,0
+p104,287714,indoor,a tub and a sink in a rest room.,1323715146,0
+p105,343149,person,Outside view of people walking in front of a store.,1243138366,0
+p106,159977,multi_object,A giraffe and a zebra walking through an African plain.,70474090,0
+p107,150726,animal,A pair of giraffes walking in an area between a rock and a tree.,919227598,0
+p108,371677,indoor,Two computer screens that are sitting on a desk.,1184542254,0
+p109,49269,multi_object,A brown horse stands over a light colored dog.,1438796863,0
+p110,382734,indoor,A bathroom being renovated with pipes in the wall.,1873809793,0
+p111,32861,person,A person poses with a open umbrella indoors.,814990026,0
+p112,86220,multi_object,A white car and a white bus parked parallel from one another.,1644465423,0
+p113,91406,person,Four women stand behind boxes of large pizzas.,136259426,0
+p114,127494,indoor,A white plate of food on a table.,1596920057,0
+p115,519764,multi_object,Cat lethargically on comfy computer chair looking relaxed.,1376632804,0
+p116,65074,indoor,A rumbled bed sits empty as sun shines in the adjacent window.,22197389,0
+p117,443969,person,A little girl inside of a shopping cart.,1669833721,0
+p118,540280,indoor,Photography equipment and a light sitting in a room.,1819547860,0
+p119,510329,outdoor,Adults standing on carved stone display overlooking large city.,1963816250,0
+p120,146498,outdoor,A street sign at the corner of S Lane St and 12th Ave.,873234338,0
+p121,494863,multi_object,A train next to another train next to a car.,829353495,0
+p122,221502,outdoor,A park bench surrounded by floral arrangements on either side.,978393192,0
+p123,144798,indoor,A cup sits on the edge of a white tub in a bathroom.,1760609481,0
+p124,455981,indoor,A toilet with some toilet paper and a plunger.,1547856201,0
+p125,344611,outdoor,A warning sign for high water is on the side of the road.,2076346451,0
+p126,424162,multi_object,"A dog being led down the street, by a woman on a bike.",1806555583,0
+p127,345361,person,Children at a birthday party sitting at a picnic table.,202756207,0
+p128,318455,multi_object,This table has cupcakes and cake on it.,1653324682,0
+p129,400573,person,A man wearing glasses eating a glazed donut out of doors.,655648687,0
+p130,79565,animal,Two giraffes traveling across a rocky terrain with patchy grass.,1235728930,0
+p131,278353,animal,A sheep standing on the grass in front of a fence.,1363963745,0
+p132,336209,outdoor,Skate boarder doing stunts in front of graffiti covered building.,1919866363,0
+p133,468245,indoor,A white bed sitting in the corner of a room next to windows.,1698721243,0
+p134,387148,outdoor,A herd of cattle grazing in a field.,407990021,0
+p135,493334,multi_object,A large sheet cake with a frosted mobile phone.,733114559,0
+p136,263474,indoor,The toilet seat cover is made up of many colors.,1171113019,0
+p137,100510,person,A person on a horse jumping over a obstacle.,537383101,0
+p138,102707,indoor,Utensils and containers line the sink in a kitchen.,790779032,0
+p139,15440,outdoor,a street sign with buildings in the background.,1962126903,0
+p140,578545,person,A pregnant woman laying in bed reading a book.,1121075454,0
+p141,417876,animal,Two giraffes in an outdoor setting eating grass.,563208468,0
+p142,395388,person,Group of men spectating a cluster of pigs at fair.,1449416408,0
+p143,366141,multi_object,"A living room with a chair, couch, and a TV.",961578406,0
+p144,201676,animal,Three zebras stand in a field near a tree.,323520435,0
+p145,439994,outdoor,a catcher and umpire standing on a baseball field.,684070637,0
+p146,517069,person,A woman sitting on a bench in the middle of the city.,1781329943,0
+p147,550939,outdoor,An intersection with two street signs near a palm tree.,1624734059,0
+p148,350122,multi_object,A woman walking a bike down a walkway in a train station.,849645576,0
+p149,4495,indoor,"A television, couch and chair in the corner of a room.",1213264606,0

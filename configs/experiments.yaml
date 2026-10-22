@@ -1,0 +1,81 @@
+# 全部实验的统一配置。所有 run 共享 common 里的参数，保证公平对比。
+# 修改这里之后，已经生成的图片不会自动重跑（脚本按文件是否存在跳过），
+# 如果改了 common 参数，请删除 outputs/ 或换一个 output_dir。
+
+common:
+  model_id: stabilityai/stable-diffusion-xl-base-1.0
+  height: 1024
+  width: 1024
+  num_inference_steps: 30
+  guidance_scale: 5.0          # CFG scale，三种方法相同
+  scheduler: euler             # euler | dpm++ ，固定一种
+  dtype: fp16                  # fp16 | bf16 | fp32
+  pag_applied_layers: [mid]    # PAG 默认作用层（Diffusers 官方示例）
+  output_dir: outputs
+
+prompts:
+  file: data/prompts.csv
+  # 超参数实验只用前 subset_size 条（prompts.csv 中 in_subset=1 的行）
+  subset_size: 50
+
+# 每个 run = 一种设置。prompts: all 跑全部，subset 只跑子集。
+# freeu: null 表示关闭；pag_scale: 0 表示关闭 PAG。
+runs:
+  # ---------- 主实验（全部 prompt） ----------
+  baseline:
+    prompts: all
+    freeu: null
+    pag_scale: 0.0
+  freeu:
+    prompts: all
+    freeu: {b1: 1.3, b2: 1.4, s1: 0.9, s2: 0.2}   # FreeU 官方 SDXL 推荐值
+    pag_scale: 0.0
+  pag:
+    prompts: all
+    freeu: null
+    pag_scale: 3.0
+
+  # ---------- FreeU 超参实验（子集） ----------
+  freeu_weak:
+    prompts: subset
+    freeu: {b1: 1.1, b2: 1.2, s1: 0.95, s2: 0.6}
+    pag_scale: 0.0
+  freeu_strong:
+    prompts: subset
+    freeu: {b1: 1.5, b2: 1.6, s1: 0.7, s2: 0.1}
+    pag_scale: 0.0
+
+  # ---------- PAG scale 实验（子集） ----------
+  pag_s1:
+    prompts: subset
+    freeu: null
+    pag_scale: 1.0
+  pag_s5:
+    prompts: subset
+    freeu: null
+    pag_scale: 5.0
+
+  # ---------- PAG 作用层实验（子集，可选） ----------
+  pag_up:
+    prompts: subset
+    freeu: null
+    pag_scale: 3.0
+    pag_applied_layers: [up_blocks.0]
+
+  # ---------- 主实验第四组：FreeU + PAG 叠加（全部 prompt） ----------
+  freeu_pag:
+    prompts: all
+    freeu: {b1: 1.3, b2: 1.4, s1: 0.9, s2: 0.2}
+    pag_scale: 3.0
+
+# 分析时的分组：每组内的 run 在同一批 prompt 上对比。
+groups:
+  main: [baseline, freeu, pag, freeu_pag]
+  freeu_sweep: [baseline, freeu_weak, freeu, freeu_strong]
+  pag_sweep: [baseline, pag_s1, pag, pag_s5]       # 对应 pag_scale 0 / 1 / 3 / 5
+  pag_layers: [baseline, pag, pag_up]
+
+# 人工盲评使用的 run（四张图选最好 / 最差）
+blind_eval:
+  runs: [baseline, freeu, pag, freeu_pag]
+  num_prompts: 60    # 每位评审要看的 prompt 数，三个人都看同一批

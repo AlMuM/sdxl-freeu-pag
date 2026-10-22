@@ -1,0 +1,7 @@
+pair,A wins,B wins,ties,A win rate (excl. ties),sign test p
+SDXL vs SDXL+FreeU,73,52,55,58.4%,0.0732
+SDXL vs SDXL+PAG,63,83,34,43.2%,0.116
+SDXL vs FreeU+PAG,87,46,47,65.4%,0.000477
+SDXL+FreeU vs SDXL+PAG,31,77,72,28.7%,1.12e-05
+SDXL+FreeU vs FreeU+PAG,96,38,46,71.6%,5.72e-07
+SDXL+PAG vs FreeU+PAG,114,15,51,88.4%,5.05e-20
