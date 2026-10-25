@@ -15,6 +15,7 @@ scripts/06_make_grids.py       并排对比图（自动挑选成功/失败案例
 scripts/07_report_figures.py   报告用英文图表
 scripts/08_clip_similarity.py  与原始 SDXL 图片的 CLIP 图像相似度
 src/dune.py                    DUNE（Lim et al., 2026）检测阶段的复现
+presentation/                  8 分钟展示 slides（.pptx/.pdf，含演讲备注）及生成脚本 build_deck.js
 slurm/dune.sh                  集群上跑 DUNE + 相似度
 src/blind_eval.html            盲评网页模板
 colab_run.ipynb                Colab 一键运行笔记本
