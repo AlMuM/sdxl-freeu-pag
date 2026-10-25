@@ -12,6 +12,10 @@ scripts/03_clipscore.py        计算 CLIPScore
 scripts/04_build_blind_eval.py 打包人工盲评网页
 scripts/05_analyze.py          汇总表格 + 图表 + 统计检验
 scripts/06_make_grids.py       并排对比图（自动挑选成功/失败案例）
+scripts/07_report_figures.py   报告用英文图表
+scripts/08_clip_similarity.py  与原始 SDXL 图片的 CLIP 图像相似度
+src/dune.py                    DUNE（Lim et al., 2026）检测阶段的复现
+slurm/dune.sh                  集群上跑 DUNE + 相似度
 src/blind_eval.html            盲评网页模板
 colab_run.ipynb                Colab 一键运行笔记本
 ```
@@ -37,6 +41,7 @@ eval_results/              收回的 results_<名字>.json 放这里
 | freeu | 主实验 | 全部 | b1=1.3 b2=1.4 s1=0.9 s2=0.2（官方 SDXL 推荐） | 0 |
 | pag | 主实验 | 全部 | 关 | 3.0，mid 层 |
 | freeu_pag | 主实验（第四组：叠加） | 全部 | 官方值 | 3.0，mid 层 |
+| dune | 主实验（第五组：DUNE 复现，见 src/dune.py） | 全部 | 关 | 0（DUNE κ=0.3, γ=0.7, p=0.9） |
 | freeu_weak / freeu_strong | FreeU 超参 | 子集 | 更弱 / 更强 | 0 |
 | pag_s1 / pag_s5 | PAG scale | 子集 | 关 | 1 / 5 |
 | pag_up | PAG 作用层 | 子集 | 关 | 3，up_blocks.0 |

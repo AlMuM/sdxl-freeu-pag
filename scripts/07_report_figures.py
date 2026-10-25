@@ -174,6 +174,40 @@ def fig_sweeps(clip, cfg, out):
     plt.close(fig)
 
 
+def fig_similarity(sim, prompts, out):
+    """左：主实验各设置与原图的相似度；右：子集上随 PAG scale / FreeU 强度的变化。"""
+    stat = lambda x: (x.mean(), *boot_ci(x))
+    main_runs = ["dune", "pag", "freeu", "freeu_pag"]
+    names = {"dune": "SDXL + DUNE", **NAME}
+    fig, axes = plt.subplots(1, 2, figsize=(8.0, 3.0), gridspec_kw={"width_ratios": [1.1, 1]})
+    ax = axes[0]
+    for i, r in enumerate(main_runs):
+        m, lo, hi = stat(sim[sim.run == r].sim)
+        c = {"pag": BLUE, "freeu": ORANGE, "dune": "#7A5AA6"}.get(r, GREY)
+        ax.errorbar(m, -i, xerr=[[m - lo], [hi - m]], fmt="o", color=c, capsize=3)
+        if hi > 0.97:  # 靠近 1.0 的虚线时，数字放在点的左边
+            ax.text(lo - 0.006, -i, f"{m:.3f}", va="center", ha="right", fontsize=9)
+        else:
+            ax.text(hi + 0.006, -i, f"{m:.3f}", va="center", fontsize=9)
+    ax.set_yticks([-i for i in range(len(main_runs))], [names[r] for r in main_runs])
+    ax.set_xlim(0.80, 1.01)
+    ax.axvline(1.0, color="#888", ls="--", lw=1)
+    ax.set_xlabel("CLIP image similarity to SDXL (150 prompts)")
+    ax = axes[1]
+    subset = set(prompts[prompts.in_subset == 1].prompt_id)
+    sub = sim[sim.prompt_id.isin(subset)]
+    for runs, xs, c, lab in [(["pag_s1", "pag", "pag_s5"], [1, 3, 5], BLUE, "PAG scale (1, 3, 5)"),
+                             (["freeu_weak", "freeu", "freeu_strong"], [1, 3, 5], ORANGE, "FreeU (weak, default, strong)")]:
+        ms = [sub[sub.run == r].sim.mean() for r in runs]
+        ax.plot([0] + xs, [1.0] + ms, marker="o", color=c, label=lab)
+    ax.set_xticks([0, 1, 3, 5], ["off", "1 / weak", "3 / default", "5 / strong"], fontsize=8.5)
+    ax.set_ylabel("similarity (50-prompt subset)")
+    ax.legend(frameon=False, fontsize=8)
+    fig.tight_layout()
+    fig.savefig(out / "fig_similarity.png", bbox_inches="tight")
+    plt.close(fig)
+
+
 def main():
     cfg = load_config()
     out = results_dir(cfg) / "report_figs"
@@ -187,6 +221,9 @@ def main():
     fig_failure_tags(h, out)
     fig_category_rank(h, prompts, out)
     fig_sweeps(clip, cfg, out)
+    sim_path = results_dir(cfg) / "clip_similarity.csv"
+    if sim_path.exists():
+        fig_similarity(pd.read_csv(sim_path).drop_duplicates(["run", "prompt_id"], keep="last"), prompts, out)
     print("written:", ", ".join(sorted(p.name for p in out.glob("*.png"))))
 
 

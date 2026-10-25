@@ -33,9 +33,9 @@ LABELS = {
     "baseline": "SDXL", "freeu": "SDXL+FreeU", "pag": "SDXL+PAG",
     "freeu_weak": "FreeU (weak)", "freeu_strong": "FreeU (strong)",
     "pag_s1": "PAG s=1", "pag_s5": "PAG s=5", "pag_up": "PAG up_blocks.0",
-    "freeu_pag": "FreeU+PAG",
+    "freeu_pag": "FreeU+PAG", "dune": "SDXL+DUNE",
 }
-COLORS = {"baseline": "#888780", "freeu": "#1D9E75", "pag": "#7F77DD", "freeu_pag": "#D85A30"}
+COLORS = {"baseline": "#888780", "freeu": "#1D9E75", "pag": "#7F77DD", "freeu_pag": "#D85A30", "dune": "#BA7517"}
 plt.rcParams.update({"figure.dpi": 150, "savefig.dpi": 200, "axes.spines.top": False,
                      "axes.spines.right": False, "font.size": 10})
 
@@ -327,6 +327,20 @@ def main():
             md += ["### CLIPScore by category", "", md_table(cat), ""]
         if g == "pag_sweep":
             fig_pag_scale(piv, rec, runs, out / "fig_pag_scale.png")
+
+    sim_path = out / "clip_similarity.csv"
+    if sim_path.exists():
+        sim = pd.read_csv(sim_path).drop_duplicates(["run", "prompt_id"], keep="last")
+        rows = []
+        for r in [r for r in cfg["runs"] if r in set(sim.run)]:
+            x = sim[sim.run == r].sim
+            lo, hi = boot_ci(x)
+            rows.append({"method": label(r), "n": len(x), "CLIP sim. to SDXL": f"{x.mean():.3f}",
+                         "95% CI": f"[{lo:.3f}, {hi:.3f}]", "min": f"{x.min():.3f}"})
+        sim_tab = pd.DataFrame(rows)
+        sim_tab.to_csv(out / "table_clip_similarity.csv", index=False)
+        md += ["## Similarity to the SDXL image (CLIP image–image cosine, same prompt and seed)", "",
+               md_table(sim_tab), ""]
 
     h = load_human(cfg)
     if h is None:

@@ -1,6 +1,6 @@
-category,SDXL,SDXL+FreeU,SDXL+PAG,FreeU+PAG
-animal,27.54,27.54,27.43,27.38
-indoor,26.26,25.37,25.55,25.29
-multi_object,27.32,27.28,26.52,26.73
-outdoor,25.35,25.0,24.34,24.36
-person,26.32,26.78,26.17,26.03
+category,SDXL,SDXL+FreeU,SDXL+PAG,FreeU+PAG,SDXL+DUNE
+animal,27.54,27.54,27.43,27.38,27.49
+indoor,26.26,25.37,25.55,25.29,26.26
+multi_object,27.32,27.28,26.52,26.73,27.0
+outdoor,25.35,25.0,24.34,24.36,25.44
+person,26.32,26.78,26.17,26.03,26.41

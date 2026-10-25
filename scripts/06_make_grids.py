@@ -29,7 +29,7 @@ from src.common import ROOT, image_path, load_config, resolve, results_dir  # no
 
 LABELS = {"baseline": "SDXL Base", "freeu": "SDXL + FreeU", "pag": "SDXL + PAG",
           "freeu_weak": "FreeU weak", "freeu_strong": "FreeU strong",
-          "pag_s1": "PAG s=1", "pag_s5": "PAG s=5", "pag_up": "PAG up_blocks.0", "freeu_pag": "FreeU + PAG"}
+          "pag_s1": "PAG s=1", "pag_s5": "PAG s=5", "pag_up": "PAG up_blocks.0", "freeu_pag": "FreeU + PAG", "dune": "SDXL + DUNE"}
 
 
 def _font(size, bold=False):
@@ -101,10 +101,11 @@ def pick_cases(clip, h, runs, k):
         rank, fail = h["rank"], h["fail"]
         common = rank.dropna().index
         rank, fail = rank.loc[common], fail.loc[common]
-        for r in enhanced:
-            others = [o for o in runs if o != r]
+        rated = [r for r in runs if r in rank.columns]  # 人工只评了部分方法（如没有 DUNE）
+        for r in rated[1:]:
+            others = [o for o in rated if o != r]
             cases[f"{r}_better"] = (rank[others].min(axis=1) - rank[r]).nlargest(k).index
-        cases["all_fail"] = fail[enhanced].sum(axis=1).nlargest(k).index
+        cases["all_fail"] = fail[rated[1:]].sum(axis=1).nlargest(k).index
     return {name: list(ids) for name, ids in cases.items()}
 
 

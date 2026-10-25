@@ -48,6 +48,7 @@ def run_settings(cfg: dict, run_name: str) -> dict:
     run = cfg["runs"][run_name]
     return {
         "freeu": run.get("freeu"),
+        "dune": run.get("dune"),
         "pag_scale": float(run.get("pag_scale", 0.0)),
         "pag_applied_layers": run.get("pag_applied_layers", common["pag_applied_layers"]),
         "guidance_scale": run.get("guidance_scale", common["guidance_scale"]),

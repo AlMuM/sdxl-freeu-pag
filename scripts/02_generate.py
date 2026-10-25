@@ -79,10 +79,13 @@ def build_pipeline(cfg: dict, cpu_offload: bool):
     else:
         pipe.to(device)
     pipe.set_progress_bar_config(disable=True)
+    from src.dune import Dune
+    pipe.dune = Dune(pipe)  # 只挂钩子，configure 之前不生效
     return pipe, device
 
 
 def apply_settings(pipe, s: dict):
+    pipe.dune.configure(s["dune"], s["num_inference_steps"])
     if s["freeu"]:
         pipe.enable_freeu(**s["freeu"])
     else:
@@ -94,6 +97,7 @@ def generate_one(pipe, device: str, prompt: str, seed: int, s: dict):
     import torch
 
     gen_device = "cpu" if device == "mps" else device
+    pipe.dune.reset()
     generator = torch.Generator(gen_device).manual_seed(seed)
     if device == "cuda":
         torch.cuda.synchronize()
@@ -193,7 +197,7 @@ def main():
         s = run_settings(cfg, run)
         todo = prompts_for_run(cfg, run, prompts)[: args.limit]
         todo = [p for p in todo if not image_path(cfg, run, p["prompt_id"]).exists()]
-        print(f"\n== {run}: freeu={s['freeu']} pag_scale={s['pag_scale']} "
+        print(f"\n== {run}: freeu={s['freeu']} pag_scale={s['pag_scale']} dune={s['dune']} "
               f"layers={s['pag_applied_layers']} | 待生成 {len(todo)} 张")
         if not todo:
             continue
@@ -214,6 +218,10 @@ def main():
             out = image_path(cfg, run, p["prompt_id"])
             out.parent.mkdir(parents=True, exist_ok=True)
             image.save(out)
+            if s["dune"] and i == 1 and pipe is not None:  # 第一张图打印 DUNE 每步的抑制情况，便于核查
+                for st in pipe.dune.stats:
+                    print("    DUNE step {step:2d}: masked={masked:.3f} factor mean={factor_mean:.3f} "
+                          "max={factor_max:.3f} shrunk={shrunk:.2f}".format(**st))
             append_record(rec_path, {
                 "run": run, "prompt_id": p["prompt_id"], "seed": p["seed"],
                 "time_s": round(elapsed, 3), "peak_mem_gb": round(peak, 3),
